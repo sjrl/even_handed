@@ -10,7 +10,8 @@ import numpy as np
 import argparse
 import warnings
 
-from reaction_coord import *
+from reaction_coord import create_reaction_coord
+
 
 def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
     """
@@ -150,16 +151,14 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
             even_handed_set2 = set(add1_sorted_indices2[-1*nocc_a1:])
             sub_a_indices2 = reaction_coord[i+1].sub_a_indices
             updated_sub_a_indices2 = sub_a_indices2.union(even_handed_set2)
-            updated_sub_b_indices2 = set([x for x in range(1,nocc2+1) if x not in updated_sub_a_indices2])
-            #updated_sub_b_indices2 = reaction_coord[i+1].sub_b_indices - updated_sub_a_indices2
+            updated_sub_b_indices2 = set([x for x in range(1, nocc2+1) if x not in updated_sub_a_indices2])
         else:
             # Select the nocc_b1 largest overlap_metric2 values for even_handed_set2
             nocc_b1 = reaction_coord[i].nocc_b
             even_handed_set2 = set(add1_sorted_indices2[-1*nocc_b1:])
             sub_b_indices2 = reaction_coord[i+1].sub_b_indices
             updated_sub_b_indices2 = sub_b_indices2.intersection(even_handed_set2)
-            updated_sub_a_indices2 = set([x for x in range(1,nocc2+1) if x not in updated_sub_b_indices2])
-            #updated_sub_a_indices2 = reaction_coord[i+1].sub_a_indices - updated_sub_b_indices2
+            updated_sub_a_indices2 = set([x for x in range(1, nocc2+1) if x not in updated_sub_b_indices2])
 
         # Update reaction_coord info for i+1
         reaction_coord[i+1].nocc_a = len(updated_sub_a_indices2)
@@ -189,7 +188,7 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
             sub_a_indices1 = reaction_coord[i].sub_a_indices
             updated_sub_a_indices1 = sub_a_indices1.union(even_handed_set1)
             updated_sub_b_indices1 = set([x for x in range(1,nocc1+1) if x not in updated_sub_a_indices1])
-            #updated_sub_b_indices1 = reaction_coord[i].sub_b_indices - updated_sub_a_indices1
+            # updated_sub_b_indices1 = reaction_coord[i].sub_b_indices - updated_sub_a_indices1
         else:
             # Select the nocc_b2 largest overlap_metric1 values for even_handed_set1
             nocc_b2 = reaction_coord[i+1].nocc_b
@@ -197,7 +196,7 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
             sub_b_indices1 = reaction_coord[i].sub_b_indices
             updated_sub_b_indices1 = sub_b_indices1.intersection(even_handed_set1)
             updated_sub_a_indices1 = set([x for x in range(1,nocc1+1) if x not in updated_sub_b_indices1])
-            #updated_sub_a_indices1 = reaction_coord[i].sub_a_indices - updated_sub_b_indices1
+            # updated_sub_a_indices1 = reaction_coord[i].sub_a_indices - updated_sub_b_indices1
 
         # Update reaction_coord info for i
         reaction_coord[i].nocc_a = len(updated_sub_a_indices1)
@@ -205,18 +204,18 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
         reaction_coord[i].nocc_b = len(updated_sub_b_indices1)
         reaction_coord[i].sub_b_indices = updated_sub_b_indices1
 
-        # Add overlp_metric data to the reaction_coord dictionary
+        # Add overlap_metric data to the reaction_coord dictionary
         reaction_coord[i].overlap_metric = overlap_metric1
 
     print('')
     print('After even-handed embedding')
     print('Subsystem A orbitals')
     for item in reaction_coord:
-        print(str(item.root.split('/')[-1]) + ': ' + str(len(item.sub_a_indices)) + ' orbitals' )
+        print(str(item.root.split('/')[-1]) + ': ' + str(len(item.sub_a_indices)) + ' orbitals')
 
     print('Subsystem B orbitals')
     for item in reaction_coord:
-        print(str(item.root.split('/')[-1]) + ': ' + str(len(item.sub_b_indices)) + ' orbitals' )
+        print(str(item.root.split('/')[-1]) + ': ' + str(len(item.sub_b_indices)) + ' orbitals')
 
     print('')
     print('Even-handed Subsystem A Orbital Indices')
@@ -228,22 +227,22 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
     for item in reaction_coord:
         print(item.root.split('/')[-1] + ': ' +str(list(item.sub_b_indices)))
 
-        #orb_fname = os.path.join(root,str(root.split('/')[-1]) + '_sub_a.txt')
-        #with open(orb_fname,'w') as file1:
-        #    file1.write('Even-handed Subsystem A Orbital Indices\n')
-        #    file1.write(str(list(orbital_indices)))
+        # orb_fname = os.path.join(root,str(root.split('/')[-1]) + '_sub_a.txt')
+        # with open(orb_fname,'w') as file1:
+        #     file1.write('Even-handed Subsystem A Orbital Indices\n')
+        #     file1.write(str(list(orbital_indices)))
 
     print('')
     print('Overlap Metric for each Molecular Orbital')
     for item in reaction_coord:
         print(item.root.split('/')[-1] + ': ' +str(list(item.overlap_metric)))
 
-        #overlap_fname = os.path.join(root,str(root.split('/')[-1]) + '_overlap_metric.txt')
-        #with open(overlap_fname,'w') as file1:
-        #    file1.write('Overlap Metric\n')
-        #    for i in range(len(overlap_metric[0])):
-        #        line = "{:3d} {:8f}\n".format(overlap_metric[0][i], overlap_metric[1][i])
-        #        file1.write(line)
+        # overlap_fname = os.path.join(root,str(root.split('/')[-1]) + '_overlap_metric.txt')
+        # with open(overlap_fname,'w') as file1:
+        #     file1.write('Overlap Metric\n')
+        #     for i in range(len(overlap_metric[0])):
+        #         line = "{:3d} {:8f}\n".format(overlap_metric[0][i], overlap_metric[1][i])
+        #         file1.write(line)
 
     # Do some sanity checks to make sure the even handed procedure worked.
     if sub_a_even_handed:
@@ -256,7 +255,7 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
     return reaction_coord
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', type=str, help='Top level directory that contains output files to be used for even-handed.', required=True)
     parser.add_argument('-n', type=str, help='Name of output file. This relies on output files having the same name.', required=True)

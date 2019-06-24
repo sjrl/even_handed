@@ -5,6 +5,7 @@ Functions to read molpro output files for embedding info and matrop matrix files
 
 import numpy as np
 
+
 def read_embed_output(molpro_output):
     """
     Placeholder function to show example docstring (NumPy format)
@@ -41,7 +42,7 @@ def read_embed_output(molpro_output):
                 nocc = int(float(fields[-1])/2)
 
             # Read nocc_a
-            if fields[:-1] == ['Number', 'of', 'active','electrons:']:
+            if fields[:-1] == ['Number', 'of', 'active', 'electrons:']:
                 # NOTE: Hard coded in closed shell by dividing by 2
                 nocc_a = int(float(fields[-1])/2)
 
@@ -94,7 +95,7 @@ def read_matrop_matrix(matrop_output, nao):
     with open(matrop_output,'r') as file1:
         for lc, lines in enumerate(file1):
             fields = lines.split(',')
-            #print(fields)
+            # print(fields)
 
             # Determine when start and stop reading ORB matrix
             if fields[0] == 'BEGIN_DATA':
