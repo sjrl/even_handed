@@ -5,12 +5,8 @@ Implementation of the even-handed subsystem selection for projection-based embed
 Handles the primary functions
 """
 
-import os
 import numpy as np
-import argparse
 import warnings
-
-from reaction_coord import create_reaction_coord
 
 
 def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
@@ -253,21 +249,3 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
             assert(reaction_coord[i].nocc_b == reaction_coord[i+1].nocc_b), 'Number of orbitals in subsystem B is not consistent between geometries.'
 
     return reaction_coord
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-d', type=str, help='Top level directory that contains output files to be used for even-handed.', required=True)
-    parser.add_argument('-n', type=str, help='Name of output file. This relies on output files having the same name.', required=True)
-    parser.add_argument('--b', dest='sub_a_even_handed', action='store_false', help='If this option is given subsystem B is made even-handed.')
-    parser.set_defaults(sub_a_even_handed=True)
-
-    args = parser.parse_args()
-    start_dir = os.path.join(os.getcwd(), args.d)
-    name_of_output_file = args.n
-
-    # Assemble reaction coordinate
-    reaction_coord = create_reaction_coord(start_dir, name_of_output_file)
-
-    # Perform even-handed embedding
-    even_handed_reac_coord = even_handed(reaction_coord, args.sub_a_even_handed)
