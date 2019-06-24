@@ -6,6 +6,8 @@ even_handed
 
 Implementation of the even-handed subsystem selection for projection-based embedding.
 
+J. Chem. Phys. 149, 144101 (2018); https://doi.org/10.1063/1.5050533
+
 ### Copyright
 
 Copyright (c) 2019, Sebastian Lee
