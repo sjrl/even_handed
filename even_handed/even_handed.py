@@ -46,13 +46,19 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
         tmp_s_sqrt_mat2[:, i] = s_vec2[:, i] * np.sqrt(s_eig2[i])
     s_sqrt_mat2 = np.matmul(tmp_s_sqrt_mat2, s_vec2.T)
 
+    nao_diff = abs(mol1.nao - mol2.nao)
+    print('Overlap Metric')
+    print(mol1.nao)
+    print(mol2.nao)
+    print(nao_diff)
+
     # Calculate S^k,k+1 matrix
     if mol1.nao < mol2.nao:
         # s12 is square with dimensions mol1.nao x mol1.nao
-        s12 = np.matmul(s_sqrt_mat1, s_sqrt_mat2[mol1.nao:, mol1.nao:])
+        s12 = np.matmul(s_sqrt_mat1, s_sqrt_mat2[nao_diff:, nao_diff:])
     elif mol1.nao > mol2.nao:
         # s12 is square with dimensions mol2.nao x mol2.nao
-        s12 = np.matmul(s_sqrt_mat1[mol2.nao:, mol2.nao:], s_sqrt_mat2)
+        s12 = np.matmul(s_sqrt_mat1[nao_diff:, nao_diff:], s_sqrt_mat2)
     # mol1.nao == mol2.nao case
     else:
         # Original way (from J. Chem. Phys. 2018, 149 (14), 144101.)
@@ -63,14 +69,14 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
         # s12, and mol1.lmo_mat is square
         # mol2.lmo_mat is rectangular (AO dimension is reduced to mol1.nao)
         # lmo1_s12_lmo2 is rectangular nocc1 x nocc2
-        s12_lmo2 = np.dot(s12, mol2.lmo_mat[mol1.nao:, :])
+        s12_lmo2 = np.dot(s12, mol2.lmo_mat[nao_diff:, :])
         lmo1_s12_lmo2 = np.dot(mol1.lmo_mat.T, s12_lmo2)
     elif mol1.nao > mol2.nao:
         # s12, and mol2.lmo_mat is square
         # mol1.lmo_mat is rectangular (AO dimension is reduced to mol2.nao)
         # lmo1_s12_lmo2 is rectangular nocc1 x nocc2
         s12_lmo2 = np.dot(s12, mol2.lmo_mat)
-        lmo1_s12_lmo2 = np.dot(mol1.lmo_mat.T, s12_lmo2)
+        lmo1_s12_lmo2 = np.dot(mol1.lmo_mat.T[:, nao_diff:], s12_lmo2)
     # mol1.nao == mol2.nao case
     else:
         # Original way (from J. Chem. Phys. 2018, 149 (14), 144101.)
@@ -232,6 +238,16 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
     print('Overlap Metric for each Molecular Orbital')
     for item in reaction_coord:
         print(item.root.split('/')[-1] + ': ' + str(list(item.overlap_metric)))
+
+    print(reaction_coord[0].root.split('/')[-1])
+    for oitm in reaction_coord[0].overlap_metric:
+        if oitm > 1:
+            print(oitm)
+
+    print(reaction_coord[1].root.split('/')[-1])
+    for oitm in reaction_coord[1].overlap_metric:
+        if oitm > 1:
+            print(oitm)
 
         # overlap_fname = os.path.join(root,str(root.split('/')[-1]) + '_overlap_metric.txt')
         # with open(overlap_fname,'w') as file1:
