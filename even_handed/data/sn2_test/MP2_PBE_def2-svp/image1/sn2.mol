@@ -1,0 +1,31 @@
+memory,800,M
+
+{gthresh,orbital=1.0d-07}
+{grid,name=NEESE,neese_index=7}
+{symmetry,nosym}
+
+geometry = reac.xyz
+
+basis={
+default,def2-svp
+ecp,I,ecp46mdf
+ecp,Br,ecp28mdf
+}
+
+proc high1
+    {hf}
+    {mp2}
+endproc
+
+set,charge=-1
+
+{rks,PBE;save,2102.2}
+{ibba;freezecore}
+{embed,highproc=high1,atoms=[C],save_orbs=4500.2}
+
+{matrop
+load,S
+load,emb_orb,ORB,2102.2,SET=2
+write,S,s_mat.txt,status=NEW,format=SCIENTIFIC
+write,emb_orb,orbs_mat.txt,status=NEW,format=SCIENTIFIC
+}

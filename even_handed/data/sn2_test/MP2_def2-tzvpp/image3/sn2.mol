@@ -1,0 +1,18 @@
+memory,800,M
+
+{gthresh,orbital=1.0d-07}
+{grid,name=NEESE,neese_index=7}
+{symmetry,nosym}
+
+geometry = prod.xyz
+
+basis={
+default,def2-tzvpp
+ecp,I,ecp46mdf
+ecp,Br,ecp28mdf
+}
+
+set,charge=-1
+
+{hf}
+{mp2}
