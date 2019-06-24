@@ -21,7 +21,7 @@ def main():
     reaction_coord = create_reaction_coord(start_dir, name_of_output_file)
 
     # Perform even-handed embedding
-    even_handed_reac_coord = even_handed(reaction_coord, args.sub_a_even_handed)
+    return even_handed(reaction_coord, args.sub_a_even_handed)
 
 
 if __name__ == "__main__":
