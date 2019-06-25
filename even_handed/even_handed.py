@@ -50,11 +50,17 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
 
     # Calculate S^k,k+1 matrix
     if mol1.nao < mol2.nao:
-        # s12 is square with dimensions mol1.nao x mol1.nao
-        s12 = np.matmul(s_sqrt_mat1, s_sqrt_mat2[nao_diff:, nao_diff:])
-    elif mol1.nao > mol2.nao:
+        pad_s_sqrt_mat1 = np.zeros([mol2.nao, mol2.nao])
+        pad_s_sqrt_mat1[nao_diff:, nao_diff:] = s_sqrt_mat1
         # s12 is square with dimensions mol2.nao x mol2.nao
-        s12 = np.matmul(s_sqrt_mat1[nao_diff:, nao_diff:], s_sqrt_mat2)
+        s12 = np.matmul(pad_s_sqrt_mat1, s_sqrt_mat2)
+
+    elif mol1.nao > mol2.nao:
+        pad_s_sqrt_mat2 = np.zeros([mol1.nao, mol1.nao])
+        pad_s_sqrt_mat2[nao_diff:, nao_diff:] = s_sqrt_mat2
+        # s12 is square with dimensions mol1.nao x mol1.nao
+        s12 = np.matmul(s_sqrt_mat1, pad_s_sqrt_mat2)
+
     # mol1.nao == mol2.nao case
     else:
         # Original way (from J. Chem. Phys. 2018, 149 (14), 144101.)
@@ -62,17 +68,23 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
 
     # Calculate L^k * S^k,k+1 * L^k+1 matrix
     if mol1.nao < mol2.nao:
-        # s12, and mol1.lmo_mat is square
-        # mol2.lmo_mat is rectangular (AO dimension is reduced to mol1.nao)
-        # lmo1_s12_lmo2 is rectangular nocc1 x nocc2
-        s12_lmo2 = np.dot(s12, mol2.lmo_mat[nao_diff:, :])
-        lmo1_s12_lmo2 = np.dot(mol1.lmo_mat.T, s12_lmo2)
-    elif mol1.nao > mol2.nao:
         # s12, and mol2.lmo_mat is square
-        # mol1.lmo_mat is rectangular (AO dimension is reduced to mol2.nao)
-        # lmo1_s12_lmo2 is rectangular nocc1 x nocc2
         s12_lmo2 = np.dot(s12, mol2.lmo_mat)
-        lmo1_s12_lmo2 = np.dot(mol1.lmo_mat.T[:, nao_diff:], s12_lmo2)
+        # pad_lmo_mat1 is rectangular (AO dimension is padded to mol2.nao)
+        pad_lmo_mat1 = np.zeros([mol2.nao, mol1.nao])
+        pad_lmo_mat1[nao_diff:, :] = mol1.lmo_mat
+        # lmo1_s12_lmo2 is rectangular nocc1 x nocc2
+        lmo1_s12_lmo2 = np.dot(pad_lmo_mat1.T, s12_lmo2)
+
+    elif mol1.nao > mol2.nao:
+        # pad_lmo_mat2 is rectangular (AO dimension is padded to mol1.nao)
+        pad_lmo_mat2 = np.zeros([mol1.nao, mol2.nao])
+        pad_lmo_mat2[nao_diff:, :] = mol2.lmo_mat
+        # s12, and mol2.lmo_mat is square
+        s12_lmo2 = np.dot(s12, pad_lmo_mat2)
+        # lmo1_s12_lmo2 is rectangular nocc1 x nocc2
+        lmo1_s12_lmo2 = np.dot(mol1.lmo_mat.T, s12_lmo2)
+
     # mol1.nao == mol2.nao case
     else:
         # Original way (from J. Chem. Phys. 2018, 149 (14), 144101.)
@@ -235,15 +247,16 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
     for item in reaction_coord:
         print(item.root.split('/')[-1] + ': ' + str(list(item.overlap_metric)))
 
-    print(reaction_coord[0].root.split('/')[-1])
-    for oitm in reaction_coord[0].overlap_metric:
-        if oitm > 1:
-            print(oitm)
-
-    print(reaction_coord[1].root.split('/')[-1])
-    for oitm in reaction_coord[1].overlap_metric:
-        if oitm > 1:
-            print(oitm)
+    # Print statements to see if any of the overlaps is greater than 1
+    # print(reaction_coord[0].root.split('/')[-1])
+    # for i in range(len(reaction_coord[0].overlap_metric)):
+    #     if reaction_coord[0].overlap_metric[i] > 1:
+    #         print(str(i) + ': ' + str(reaction_coord[0].overlap_metric[i]))
+    #
+    # print(reaction_coord[1].root.split('/')[-1])
+    # for i in range(len(reaction_coord[1].overlap_metric)):
+    #     if reaction_coord[1].overlap_metric[i] > 1:
+    #         print(str(i) + ': ' + str(reaction_coord[1].overlap_metric[i]))
 
         # overlap_fname = os.path.join(root,str(root.split('/')[-1]) + '_overlap_metric.txt')
         # with open(overlap_fname,'w') as file1:
