@@ -47,10 +47,6 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
     s_sqrt_mat2 = np.matmul(tmp_s_sqrt_mat2, s_vec2.T)
 
     nao_diff = abs(mol1.nao - mol2.nao)
-    print('Overlap Metric')
-    print(mol1.nao)
-    print(mol2.nao)
-    print(nao_diff)
 
     # Calculate S^k,k+1 matrix
     if mol1.nao < mol2.nao:
@@ -93,13 +89,13 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
         # Even handedly select subsystem A
         # Zero out rows that correspond to orbs in sub B in geom 1
         for i in range(1, mol1.nocc+1):
-            if i not in mol1.sub_a_indices:
+            if i in mol1.sub_b_indices:
                 tmp_overlap_metric[i-1, :] = 0.0
     else:
         # Even handedly select subsystem B
         # Zero out rows that correspond to orbs in sub A in geom 1
         for i in range(1, mol1.nocc+1):
-            if i not in mol1.sub_b_indices:
+            if i in mol1.sub_a_indices:
                 tmp_overlap_metric[i-1, :] = 0.0
 
     # Compress down to 1-dimension where rows are compressed and added
@@ -223,11 +219,11 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
     print('Even-handed Subsystem A Orbital Indices')
     print('Subsystem A indices')
     for item in reaction_coord:
-        print(item.root.split('/')[-1] + ': ' + str(list(item.sub_a_indices)))
+        print(item.root.split('/')[-1] + ': ' + str(sorted(list(item.sub_a_indices))))
 
     print('Subsystem B indices')
     for item in reaction_coord:
-        print(item.root.split('/')[-1] + ': ' + str(list(item.sub_b_indices)))
+        print(item.root.split('/')[-1] + ': ' + str(sorted(list(item.sub_b_indices))))
 
         # orb_fname = os.path.join(root,str(root.split('/')[-1]) + '_sub_a.txt')
         # with open(orb_fname,'w') as file1:
