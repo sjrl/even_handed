@@ -3,6 +3,7 @@ memory,800,M
 {gthresh,orbital=1.0d-07}
 {grid,name=NEESE,neese_index=7}
 {symmetry,nosym}
+GDIRECT
 
 geometry = reac.xyz
 
