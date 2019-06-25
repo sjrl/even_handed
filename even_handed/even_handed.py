@@ -26,6 +26,8 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
         Compiled string including quote and optional attribution
     """
 
+    print(mol1.nocc)
+    print(mol2.nocc)
     if mol1.nocc != mol2.nocc:
         warnings.warn('Number of occupied orbitals differ between coordinates.')
 
@@ -135,6 +137,8 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
 
     # First pass through geometries
     for i in range(len(reaction_coord)-1):
+        print('First pass')
+        print('Updating '+reaction_coord[i+1].root.split('/')[-1])
         # Use np.argsort to return array of indices that index data in a sorted order
         # Sorted in ascending (small values first). Only care about the last nocc_a1 values.
         overlap_metric2 = calculate_overlap_metric(reaction_coord[i], reaction_coord[i+1], sub_a_even_handed)
@@ -171,6 +175,8 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
 
     # Second pass through geometries in reverse
     for i in reversed(range(len(reaction_coord)-1)):
+        print('Second pass')
+        print('Updating '+reaction_coord[i].root.split('/')[-1])
         # Use np.argsort to return array of indices that index data in a sorted order
         # Sorted in ascending (small values first). Only care about the last nocc_a2 values.
         overlap_metric1 = calculate_overlap_metric(reaction_coord[i+1], reaction_coord[i], sub_a_even_handed)
@@ -236,14 +242,14 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
         print(item.root.split('/')[-1] + ': ' + str(list(item.overlap_metric)))
 
     print(reaction_coord[0].root.split('/')[-1])
-    for oitm in reaction_coord[0].overlap_metric:
-        if oitm > 1:
-            print(oitm)
+    for i in range(len(reaction_coord[0].overlap_metric)):
+        if reaction_coord[0].overlap_metric[i] > 1:
+            print(str(i) + ': ' + str(reaction_coord[0].overlap_metric[i]))
 
     print(reaction_coord[1].root.split('/')[-1])
-    for oitm in reaction_coord[1].overlap_metric:
-        if oitm > 1:
-            print(oitm)
+    for i in range(len(reaction_coord[1].overlap_metric)):
+        if reaction_coord[1].overlap_metric[i] > 1:
+            print(str(i) + ': ' + str(reaction_coord[1].overlap_metric[i]))
 
         # overlap_fname = os.path.join(root,str(root.split('/')[-1]) + '_overlap_metric.txt')
         # with open(overlap_fname,'w') as file1:
