@@ -2,7 +2,6 @@
 even_handed.py
 Implementation of the even-handed subsystem selection for projection-based embedding.
 
-Handles the primary functions
 """
 
 import numpy as np
@@ -11,19 +10,20 @@ import warnings
 
 def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
     """
-    Placeholder function to show example docstring (NumPy format)
-
-    Replace this function and doc string for your own project
+    Calculate the overlap metric as defined in equation 5 of M. Welborn, et al., J. Chem. Phys. 2018, 149 (14), 144101.
 
     Parameters
     ----------
-    with_attribution : bool, Optional, default: True
-        Set whether or not to display who the quote is from
+    mol1 :
+        Molecule 1
+
+    mol2 :
+        Molecule 2
 
     Returns
     -------
-    quote : str
-        Compiled string including quote and optional attribution
+    overlap_metric : list
+        Compiled list of overlaps for each orbital in molecule 2 based on selected orbitals from molecule 1
     """
 
     if mol1.nocc != mol2.nocc:
@@ -118,19 +118,21 @@ def calculate_overlap_metric(mol1, mol2, sub_a_even_handed):
 # Perform even-handed algorithm
 def even_handed(reaction_coord, sub_a_even_handed=True):
     """
-    Placeholder function to show example docstring (NumPy format)
-
-    Replace this function and doc string for your own project
+    Perform the even-handed algorithm outlined in M. Welborn, et al., J. Chem. Phys. 2018, 149 (14), 144101.
 
     Parameters
     ----------
-    with_attribution : bool, Optional, default: True
-        Set whether or not to display who the quote is from
+    reaction_coord : list
+        List of molecule objects with the original selection of orbital indices for subsystem A and B
+
+    sub_a_even_handed : bool, Optional, default: True
+        Determines whether subsystem A is even-handedly selected (True) or if subsystem B is even-handedly selected
+        (False)
 
     Returns
     -------
-    quote : str
-        Compiled string including quote and optional attribution
+    reaction_coord : list
+        List of molecule objects with updated orbital selections for subsystem A and B
     """
 
     print('Before even-handed embedding')
@@ -169,7 +171,8 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
             nocc_b1 = reaction_coord[i].nocc_b
             even_handed_set2 = set(add1_sorted_indices2[-1*nocc_b1:])
             sub_b_indices2 = reaction_coord[i+1].sub_b_indices
-            updated_sub_b_indices2 = sub_b_indices2.intersection(even_handed_set2)
+            # updated_sub_b_indices2 = sub_b_indices2.intersection(even_handed_set2)
+            updated_sub_b_indices2 = sub_b_indices2.union(even_handed_set2)
             updated_sub_a_indices2 = set([x for x in range(1, nocc2+1) if x not in updated_sub_b_indices2])
 
         # Update reaction_coord info for i+1
@@ -205,7 +208,8 @@ def even_handed(reaction_coord, sub_a_even_handed=True):
             nocc_b2 = reaction_coord[i+1].nocc_b
             even_handed_set1 = set(add1_sorted_indices1[-1*nocc_b2:])
             sub_b_indices1 = reaction_coord[i].sub_b_indices
-            updated_sub_b_indices1 = sub_b_indices1.intersection(even_handed_set1)
+            # updated_sub_b_indices1 = sub_b_indices1.intersection(even_handed_set1)
+            updated_sub_b_indices1 = sub_b_indices1.union(even_handed_set1)
             updated_sub_a_indices1 = set([x for x in range(1, nocc1+1) if x not in updated_sub_b_indices1])
 
         # Update reaction_coord info for i
