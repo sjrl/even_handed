@@ -8,19 +8,17 @@ import numpy as np
 
 def read_embed_output(molpro_output):
     """
-    Placeholder function to show example docstring (NumPy format)
-
-    Replace this function and doc string for your own project
+    Read the Molpro output file for relevant information to perform the even-handed script.
 
     Parameters
     ----------
-    with_attribution : bool, Optional, default: True
-        Set whether or not to display who the quote is from
+    molpro_output : str
+        Name of the Molpro output file to read.
 
     Returns
     -------
-    quote : str
-        Compiled string including quote and optional attribution
+    embed_output_dict : dict
+        Dictionary of the relevant information read from the Molpro output file.
     """
 
     nocc = None
@@ -63,12 +61,14 @@ def read_embed_output(molpro_output):
             if fields[:3] == ['NUMBER', 'OF', 'CONTRACTIONS:']:
                 nao = int(fields[3])
 
-    assert (nocc_a == len(sub_a_indices)), 'Number of A MOs does not match length of A MO indices.'
+    # Check that the number of sub A MOs matches the number of sub A indices
+    assert (nocc_a == len(sub_a_indices)), 'Number of sub A MOs does not match length of sub A MO indices.'
 
     # Determine sub_b_indices from sub_a_indices and total number of MOs
     sub_b_indices = set([x for x in range(1, nocc+1) if x not in sub_a_indices])
     nocc_b = len(sub_b_indices)
 
+    # Another sanity check
     assert(nocc_a + nocc_b == nocc), 'Number of A + B MOs does not match total number of occupied MOs.'
 
     embed_output_dict = {
@@ -91,13 +91,17 @@ def read_matrop_matrix(matrop_output, nao):
 
     Parameters
     ----------
-    with_attribution : bool, Optional, default: True
-        Set whether or not to display who the quote is from
+    matrop_output : str
+        Name of the output file formatted by Matrop to be read.
+
+    nao : int
+        Number of AO functions associated with the Matrop file such that the matrix being read should be of size
+        nao x nao.
 
     Returns
     -------
-    quote : str
-        Compiled string including quote and optional attribution
+    matrix : array_like
+        Matrix read in from the Matrop file.
     """
 
     # Read matrop matrix
